@@ -1,0 +1,276 @@
+{
+	"info": {
+		"_postman_id": "17ec0430-ee2a-42b8-babf-344a4ff96f8d",
+		"name": "Users Microservice",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25007439"
+	},
+	"item": [
+		{
+			"name": "api",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "register",
+							"item": [
+								{
+									"name": "/api/Auth/register",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"email\": \"shivam.bansal@example.com\",\n  \"password\": \"shivam@97\",\n  \"personName\": \"shivam\",\n  \"gender\": \"Male\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/gateway/users/Auth/register",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"gateway",
+												"users",
+												"Auth",
+												"register"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Success",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"email\": \"string\",\n  \"password\": \"string\",\n  \"personName\": \"string\",\n  \"gender\": \"Male\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/Auth/register",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"Auth",
+														"register"
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": null
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "login",
+							"item": [
+								{
+									"name": "/api/Auth/login",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"email\": \"string\",\n  \"password\": \"string\"\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/gateway/users/Auth/login",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"gateway",
+												"users",
+												"Auth",
+												"login"
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Success",
+											"originalRequest": {
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"email\": \"string\",\n  \"password\": \"string\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/api/Auth/login",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"Auth",
+														"login"
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": null
+										}
+									]
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Users",
+					"item": [
+						{
+							"name": "{userID}",
+							"item": [
+								{
+									"name": "/api/Users/:userID",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/gateway/Users/:userID",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"gateway",
+												"Users",
+												":userID"
+											],
+											"variable": [
+												{
+													"key": "userID",
+													"value": "c32f8b42-60e6-4c02-90a7-9143ab37189f"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Success",
+											"originalRequest": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/Users/:userID",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"Users",
+														":userID"
+													],
+													"variable": [
+														{
+															"key": "userID",
+															"value": "f4ed16b3-f79d-c1c4-9d96-4e0f9f652fb5"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": null
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "/"
+		}
+	]
+}

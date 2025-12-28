@@ -1,0 +1,123 @@
+trigger:
+  - dev
+
+resources:
+  - repo: self
+
+variables:
+  - name: dockerRegistryServiceConnection
+    value: "71c7090c-b083-4be1-8685-03f0b557f300"
+  - name: containerRegistry
+    value: "shivamecomregistry.azurecr.io"
+  - name: dockerfilePath
+    value: "$(Build.SourcesDirectory)/OrdersMicroservice.API/Dockerfile"
+  - name: tag
+    value: "$(Build.BuildId)"
+  - name: linuxImageName
+    value: "ubuntu-latest"
+  - name: windowsImageName
+    value: "windows-latest"
+  - name: imageRepository
+    value: orders-microservice
+  - name: aksClusterName
+    value: "ecommerce-aks-cluster"
+  - name: aksServiceConnectionName
+    value: "dev-ecommerce-aks-cluster"
+  - name: deploymentFile
+    value: "$(Build.SourcesDirectory)/k8s/deployment.yaml"
+  - name: kubernetesNamespace
+    value: "dev"
+
+stages:
+  - stage: Build
+    displayName: Build and push stage
+    jobs:
+      - job: Build
+        displayName: Docker Build
+        pool:
+          vmImage: $(linuxImageName)
+        steps:
+          - task: Docker@2
+            displayName: Build and push an image to container registry
+            inputs:
+              command: buildAndPush
+              repository: $(imageRepository)
+              dockerfile: $(dockerfilePath)
+              containerRegistry: $(dockerRegistryServiceConnection)
+              tags: |
+                $(tag)
+              buildContext: $(Build.SourcesDirectory)
+
+  - stage: Test
+    displayName: Test and publish results stage
+    jobs:
+      - job: RunTest
+        displayName: Run Unit tests
+        pool:
+          vmImage: $(windowsImageName)
+        steps:
+          - checkout: self
+            displayName: Checkout source code
+
+          - task: NuGetToolInstaller@1
+            displayName: Install NuGetTool
+
+          - task: NuGetCommand@2
+            displayName: Restore NuGet Packages
+            inputs:
+              command: "restore"
+              restoreSolution: "**/*.sln"
+
+          - task: MSBuild@1
+            displayName: Build solution
+            inputs:
+              solution: "**/*.sln"
+              msbuildArchitecture: "x64"
+              platform: "Any CPU"
+              configuration: "Debug"
+
+          - task: VSTest@3
+            displayName: Test solution
+            inputs:
+              testSelector: "testAssemblies"
+              testAssemblyVer2: |
+                **\OrdersUnitTests.dll
+                !**\*TestAdapter.dll
+                !**\obj\**
+              searchFolder: "$(System.DefaultWorkingDirectory)"
+              runTestsInIsolation: true
+              codeCoverageEnabled: true
+
+  - stage: DeployToDev
+    displayName: Deploy to Dev
+    dependsOn: Test
+    condition: and(succeeded('Build'), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+
+    jobs:
+      - deployment: DeploymentToDev
+        displayName: Deployment to Dev Environment
+        environment: dev
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                  displayName: Checkout source code
+
+                - script: |
+                    echo "Listing contents of k8s"
+                    ls -l $(Build.SourcesDirectory)/k8s/
+                  displayName: "List Files in k8s Directory"
+
+                - script: |
+                    find $(Build.SourcesDirectory)/k8s -type f \( -name "*.yaml" -o -name "*.yml" \) -exec sed -i 's/__TAG__/$(tag)/g' {} +
+                  displayName: "Replace image tag in all deployment file"
+
+                - task: Kubernetes@1
+                  displayName: Deploy to dev namespace in kubernetes
+                  inputs:
+                    kubernetesServiceEndpoint: $(aksServiceConnectionName)
+                    kubernetesCluster: $(aksClusterName)
+                    namespace: $(kubernetesNamespace)
+                    command: apply
+                    arguments: "-f $(Build.SourcesDirectory)/k8s/."

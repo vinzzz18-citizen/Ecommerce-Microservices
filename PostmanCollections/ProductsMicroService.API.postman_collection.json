@@ -1,0 +1,435 @@
+{
+	"info": {
+		"_postman_id": "87962d63-a529-4d08-86a3-b3db4531d8c2",
+		"name": "ProductsMicroService.API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25007439"
+	},
+	"item": [
+		{
+			"name": "api",
+			"item": [
+				{
+					"name": "products",
+					"item": [
+						{
+							"name": "search",
+							"item": [
+								{
+									"name": "product-id",
+									"item": [
+										{
+											"name": "{ProductID}",
+											"item": [
+												{
+													"name": "/api/products/search/product-id/:ProductID",
+													"request": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/gateway/products/search/product-id/:ProductID",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"gateway",
+																"products",
+																"search",
+																"product-id",
+																":ProductID"
+															],
+															"variable": [
+																{
+																	"key": "ProductID",
+																	"value": "10d7b110-ecdb-4921-85a4-58a5d1b32bf4"
+																}
+															]
+														}
+													},
+													"response": [
+														{
+															"name": "Success",
+															"originalRequest": {
+																"method": "GET",
+																"header": [],
+																"url": {
+																	"raw": "{{baseUrl}}/api/products/search/product-id/:ProductID",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"api",
+																		"products",
+																		"search",
+																		"product-id",
+																		":ProductID"
+																	],
+																	"variable": [
+																		{
+																			"key": "ProductID",
+																			"value": "9d2b5b0a-db77-9940-d598-2cfaa25deee9"
+																		}
+																	]
+																}
+															},
+															"status": "OK",
+															"code": 200,
+															"_postman_previewlanguage": "text",
+															"header": [],
+															"cookie": [],
+															"body": null
+														}
+													]
+												}
+											]
+										}
+									]
+								},
+								{
+									"name": "{SearchString}",
+									"item": [
+										{
+											"name": "/api/products/search/:SearchString",
+											"request": {
+												"method": "GET",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/gateway/products/search/:SearchString",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"gateway",
+														"products",
+														"search",
+														":SearchString"
+													],
+													"variable": [
+														{
+															"key": "SearchString",
+															"value": "string"
+														}
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "Success",
+													"originalRequest": {
+														"method": "GET",
+														"header": [],
+														"url": {
+															"raw": "{{baseUrl}}/api/products/search/:SearchString",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"api",
+																"products",
+																"search",
+																":SearchString"
+															],
+															"variable": [
+																{
+																	"key": "SearchString",
+																	"value": "string"
+																}
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "text",
+													"header": [],
+													"cookie": [],
+													"body": null
+												}
+											]
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "{ProductID}",
+							"item": [
+								{
+									"name": "/api/products/:ProductID",
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/gateway/products/:ProductID",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"gateway",
+												"products",
+												":ProductID"
+											],
+											"variable": [
+												{
+													"key": "ProductID",
+													"value": "9d2b5b0a-db77-9940-d598-2cfaa25deee9"
+												}
+											]
+										}
+									},
+									"response": [
+										{
+											"name": "Success",
+											"originalRequest": {
+												"method": "DELETE",
+												"header": [],
+												"url": {
+													"raw": "{{baseUrl}}/api/products/:ProductID",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"api",
+														"products",
+														":ProductID"
+													],
+													"variable": [
+														{
+															"key": "ProductID",
+															"value": "9d2b5b0a-db77-9940-d598-2cfaa25deee9"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "text",
+											"header": [],
+											"cookie": [],
+											"body": null
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "/api/products",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/gateway/products",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"gateway",
+										"products"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{baseUrl}}/api/products",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"products"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [],
+									"cookie": [],
+									"body": null
+								}
+							]
+						},
+						{
+							"name": "/api/products",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"productName\": \"string\",\n  \"category\": 1,\n  \"unitPrice\": 5857.780327425004,\n  \"quantityInStock\": 4793\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/gateway/products",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"gateway",
+										"products"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"productName\": \"string\",\n  \"category\": 1,\n  \"unitPrice\": 5857.780327425004,\n  \"quantityInStock\": 4793\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/products",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"products"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [],
+									"cookie": [],
+									"body": null
+								}
+							]
+						},
+						{
+							"name": "/api/products",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"productID\": \"13db84ed-2f84-bf9d-fb82-924eab4f0b60\",\n  \"productName\": \"string\",\n  \"category\": 1,\n  \"unitPrice\": 8174.830378678062,\n  \"quantityInStock\": 9614\n}",
+									"options": {
+										"raw": {
+											"headerFamily": "json",
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/gateway/products",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"gateway",
+										"products"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Success",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"productID\": \"13db84ed-2f84-bf9d-fb82-924eab4f0b60\",\n  \"productName\": \"string\",\n  \"category\": 1,\n  \"unitPrice\": 8174.830378678062,\n  \"quantityInStock\": 9614\n}",
+											"options": {
+												"raw": {
+													"headerFamily": "json",
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/api/products",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"products"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "text",
+									"header": [],
+									"cookie": [],
+									"body": null
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "/"
+		}
+	]
+}

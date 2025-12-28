@@ -1,0 +1,23 @@
+Case 1:
+    image: harshaecommerceregistry.azurecr.io/orders-microservice:latest
+    [Automatically updated docker image gets downloaded everytime when you apply the deployment]
+
+Case 2:
+    image: harshaecommerceregistry.azurecr.io/orders-microservice:1
+    [It doesn't download the updated docker image]
+    [You have to manually delete the Pod to make it update].
+
+Case 3:
+    image: harshaecommerceregistry.azurecr.io/orders-microservice:1
+    imagePullPolicy: Always
+
+    [It doesn't download the updated docker image]
+    [You have to manually delete the Pod to make it update].
+
+
+Case 4:
+    image: harshaecommerceregistry.azurecr.io/orders-microservice:1
+
+    image: harshaecommerceregistry.azurecr.io/orders-microservice:2
+
+    [Automatically updated docker image gets downloaded everytime when you apply the deployment].

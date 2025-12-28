@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-microservice-deployment
+  namespace: ecommerce-namespace
+  labels:
+    app: users-microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: users-microservice
+  template:
+    metadata:
+      labels:
+        app: users-microservice
+    spec:
+      containers:
+        - name: users-microservice
+          image: shivamecomregistry.azurecr.io/users-microservice:latest
+          ports:
+            - containerPort: 9090
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Development
+            - name: POSTGRES_HOST
+              value: postgres
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_DATABASE
+              value: eCommerceUsers
+            - name: POSTGRES_USER
+              value: postgres
+            - name: POSTGRES_PASSWORD
+              value: admin

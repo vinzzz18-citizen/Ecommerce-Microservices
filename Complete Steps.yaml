@@ -1,0 +1,1229 @@
+Resource group name: yourname-resource-group
+Container registry name: shivamecomregistry
+Teant ID: c1483e56-375f-447a-a1f6-72e8a652a43d
+Key Vault Name: products-pipeline-kv3
+Email: shivammdjbansal97@gmail.com
+APIM name: harsha-ecommerce-api3
+API Gateway External IP: 13.71.113.200
+B2C Tenant Name: shivamEcomService
+
+
+----------------------------------------
+
+
+Azure login, Resource Group, Container Registry, AKS, Key Vault:
+    az login --tenant c1483e56-375f-447a-a1f6-72e8a652a43d
+    
+    az group create --name yourname-resource-group --location "South India"
+    
+    az acr create --resource-group yourname-resource-group --name shivamecomregistry --sku Basic
+    
+    az provider register --namespace Microsoft.Insights --wait; az provider register --namespace Microsoft.OperationalInsights --wait;  az provider register --namespace Microsoft.ContainerService --wait;  az provider register --namespace Microsoft.Network --wait;  az provider register --namespace Microsoft.Compute --wait;  az provider register --namespace Microsoft.OperationsManagement --wait;  az provider register --namespace Microsoft.Authorization --wait;  az provider register --namespace Microsoft.Storage --wait;
+
+    az aks create --resource-group yourname-resource-group --name ecommerce-aks-cluster --node-count 1 --node-vm-size Standard_B2s --enable-addons monitoring --generate-ssh-keys
+
+    az aks get-credentials --resource-group yourname-resource-group --name ecommerce-aks-cluster
+
+    az aks update --resource-group yourname-resource-group --name ecommerce-aks-cluster --attach-acr shivamecomregistry
+
+    kubectl cluster-info
+
+    az keyvault create --name products-pipeline-kv3 --resource-group yourname-resource-group --location "South India"
+
+    # Set KeyVault admin access to the current user
+    # Portal > Key Vaults > Select the keyvault > Access control (IAM) > Add role assignment > Key Vault Administrator > User, group or service principal > Your name
+
+    az keyvault secret set --vault-name products-pipeline-kv3 --name imageRepository --value "products-microservice"
+
+    az keyvault secret show --vault-name products-pipeline-kv3 --name imageRepository
+
+
+----------------------------------------
+https://aka.ms/azpipelines-parallelism-request
+----------------------------------------
+
+
+docker-compose:
+    cd c:\microservices
+    docker-compose -f docker-compose.build.yaml build
+
+    -------------
+
+    docker tag apigateway:latest shivamecomregistry.azurecr.io/apigateway:latest
+    docker tag ecommerce-mysql:latest shivamecomregistry.azurecr.io/ecommerce-mysql:latest
+    docker tag ecommerce-postgres:latest shivamecomregistry.azurecr.io/ecommerce-postgres:latest
+    docker tag ecommerce-mongodb:latest shivamecomregistry.azurecr.io/ecommerce-mongodb:latest
+
+    ------------
+
+    az login --tenant c1483e56-375f-447a-a1f6-72e8a652a43d
+    az acr login --name shivamecomregistry
+
+    docker push shivamecomregistry.azurecr.io/apigateway:latest
+    docker push shivamecomregistry.azurecr.io/ecommerce-mysql:latest
+    docker push shivamecomregistry.azurecr.io/ecommerce-postgres:latest
+    docker push shivamecomregistry.azurecr.io/ecommerce-mongodb:latest
+
+
+------------------------------------------
+
+Azure DevOps:
+    - Create Projects:
+        eCommerce
+
+    - Create Repos:
+        eCommerce Products Microservice
+        eCommerce Orders Microservice
+        eCommerce Users Microservice
+
+    - Create Branches:
+        eCommerce Products Microservice
+            - dev
+            - qa
+            - uat
+            - staging
+            - prod
+        eCommerce Orders Microservice
+            - dev
+            - qa
+            - uat
+            - staging
+            - prod
+        eCommerce Users Microservice
+            - dev
+            - qa
+            - uat
+            - staging
+            - prod
+
+    - Create Repos in VS
+
+    - Create Environments
+        dev
+        prod
+        qa
+        staging
+        uat
+
+    - Create Variable Groups:
+        products-microservice-dev
+            kubernetes-namespace: dev
+        products-microservice-qa
+            kubernetes-namespace: qa
+        products-microservice-uat
+            kubernetes-namespace: uat
+        products-microservice-staging
+            kubernetes-namespace: staging
+        products-microservice-prod
+            kubernetes-namespace: prod
+        users-microservice-dev
+            kubernetes-namespace: dev
+        users-microservice-qa
+            kubernetes-namespace: qa
+        users-microservice-uat
+            kubernetes-namespace: uat
+        users-microservice-staging
+            kubernetes-namespace: staging
+        users-microservice-prod
+            kubernetes-namespace: prod
+        orders-microservice-dev
+            kubernetes-namespace: dev
+        orders-microservice-qa
+            kubernetes-namespace: qa
+        orders-microservice-uat
+            kubernetes-namespace: uat
+        orders-microservice-staging
+            kubernetes-namespace: staging
+        orders-microservice-prod
+            kubernetes-namespace: prod
+        
+    - Create Pipelines
+        eCommerce Products Microservice
+        eCommerce Orders Microservice
+        eCommerce Users Microservice
+
+    - Key Vault:
+        # DevOps > Service Connections > New Service Connection > Azure Resource Manager > Service Principal (Automatic) > Resource Group: yourname-resource-group > Name: yourname-resource-group-connection > Grant access permission to all pipelines.
+
+        # To know the service principal id of the service connection, click on the service connection > Manage Service Principal > Note the service principal id in the title
+
+        # Add the Resource Manager service connection to "Key Vault Reader" role.
+        # Portal > Key Vaults > Select the keyvault > Access control (IAM) > Add role assignment > Key Vault Secrets User > User, group or service principal > service principal id of the service connection [Select all]
+
+
+    - Container Registry - Service Connection
+        # DevOps > Service Connections > New Service Connection > Docker Registry > Azure Container Registry > Service Principal > shivamecomregistry
+
+
+------------------------------------------
+
+
+Pods:
+    kubectl get all --namespace dev
+
+
+------------------------------------------
+
+
+API Management Service
+    Create API Management
+        Azure Portal
+        Resource Group: yourname-resource-group
+        Region: South India
+        Resource Name: harsha-ecommerce-api3
+        Organization Name: Web University
+        Administrator email: harshawebuniversity3@gmail.com
+        Pricing tier: Developer (no SLA)
+
+        Application Insights: Off
+        System assigned managed identity: Off
+        Virtual network: none
+
+    APIs:
+        Products Microservice:
+            Add API > HTTP
+            Display name: Products Microservice API
+            Name: products-microservice-api
+            Description: products-microservice-api
+            Web service URL: http://13.71.113.200:8080/gateway/products
+            HTTPS
+            API URL suffix: gateway/products
+
+        Orders Microservice:
+            Add API > HTTP
+            Display name: Orders Microservice API
+            Name: orders-microservice-api
+            Description: orders-microservice-api
+            Web service URL: http://13.71.113.200:8080/gateway/orders
+            HTTPS
+            API URL suffix: gateway/orders
+        
+        Users Microservice:
+            Add API > HTTP
+            Display name: Users Microservice API
+            Name: users-microservice-api
+            Description: users-microservice-api
+            Web service URL: http://13.71.113.200:8080/gateway/users
+            HTTPS
+            API URL suffix: gateway/users
+        
+
+------------------------------------------
+
+
+Products Microservice Pipeline:
+trigger:
+  branches:
+    include:
+      - dev
+      - qa
+      - uat
+      - staging
+      - prod
+
+resources:
+- repo: self
+
+variables:
+  - name: dockerRegistryServiceConnection
+    value: 'shivamecomregistry'
+  - name: imageRepository
+    value: 'products-microservice'
+  - name: containerRegistry
+    value: 'shivamecomregistry.azurecr.io'
+  - name: dockerfilePath
+    value: '$(Build.SourcesDirectory)/ProductsMicroService.API/Dockerfile'
+  - name: tag
+    value: '$(Build.BuildId)'
+  - name: linuxImageName 
+    value: 'ubuntu-latest'
+  - name: windowsImageName
+    value: 'windows-latest'
+  - name: aksClusterName
+    value: 'ecommerce-aks-cluster'
+  - name: devAksServiceConnectionName
+    value: 'dev-ecommerce-aks-cluster-dev-1730536761296'
+  - name: qaAksServiceConnectionName
+    value: 'qa-ecommerce-aks-cluster-qa-1730536816326'
+  - name: uatAksServiceConnectionName
+    value: 'uat-ecommerce-aks-cluster-uat-1730536853118'
+  - name: stagingAksServiceConnectionName
+    value: 'staging-ecommerce-aks-cluster-staging-1730536888291'
+  - name: prodAksServiceConnectionName
+    value: 'prod-ecommerce-aks-cluster-prod-1730537000746'
+  - name: resourceGroupServiceConnectionName
+    value: 'yourname-resource-group-connection'
+  - name: keyVaultName
+    value: 'products-pipeline-kv3'
+
+
+stages:
+- stage: InitializeKeyVault
+  displayName: Initialize Key Vault Secrets
+  jobs:
+  - job: FetchSecrets
+    displayName: Fetch Key Vault Secrets
+    pool:
+      vmImage: '$(linuxImageName)'
+    steps:
+      - task: AzureKeyVault@2
+        displayName: Fetch Key Vault Secrets
+        inputs:
+          azureSubscription: $(resourceGroupServiceConnectionName)
+          keyVaultName: '$(keyVaultName)'
+          SecretsFilter: '*'
+          RunAsPreJob: true
+
+
+- stage: Build
+  displayName: Build and push stage
+  jobs:
+  - job: Build
+    displayName: Docker Build
+    pool:
+      vmImage: $(linuxImageName)
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+        buildContext: $(Build.SourcesDirectory)
+
+- stage: Test
+  displayName: Test and publish results stage
+  jobs:
+  - job: RunTest
+    displayName: Run Unit tests
+    pool:
+      vmImage: $(windowsImageName)
+    steps:
+    - checkout: self
+      displayName: Checkout source code
+
+    - task: NuGetToolInstaller@1
+      displayName: Install NuGetTool
+
+    - task: NuGetCommand@2
+      displayName: Restore NuGet Packages
+      inputs:
+        command: 'restore'
+        restoreSolution: '**/*.sln'
+        
+    - task: MSBuild@1
+      displayName: Build solution
+      inputs:
+        solution: '**/*.sln'
+        msbuildArchitecture: 'x64'
+        platform: 'Any CPU'
+        configuration: 'Debug'
+    
+    - task: VSTest@3
+      displayName: Test solution
+      inputs:
+        testSelector: 'testAssemblies'
+        testAssemblyVer2: |
+          **\ProductsUnitTests.dll
+          !**\*TestAdapter.dll
+          !**\obj\**
+        searchFolder: '$(System.DefaultWorkingDirectory)'
+        runTestsInIsolation: true
+        codeCoverageEnabled: true
+
+- stage: DeployToDev
+  displayName: Deploy to Dev
+  dependsOn: Test
+  condition: and(succeeded('Build'), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+  variables:
+  - group: products-microservice-dev
+
+  jobs:
+  - deployment: DeploymentToDev
+    displayName: Deployment to Dev Environment
+    environment: dev
+    strategy:
+      runOnce:
+        deploy:
+            steps:
+            - checkout: self
+              displayName: Checkout source code
+        
+            - script: |
+                echo "Listing contents of k8s"
+                ls -l $(Build.SourcesDirectory)/k8s/dev
+              displayName:  'List Files in k8s/dev Directory'
+
+            - script: |
+                find $(Build.SourcesDirectory)/k8s/dev -type f \( -name "*.yaml" -o -name "*.yml" \) -exec sed -i 's/__TAG__/$(tag)/g' {} +
+              displayName: 'Replace image tag in all deployment files'
+
+            - task: Kubernetes@1
+              displayName: Deploy to dev namespace in kubernetes
+              inputs:
+                kubernetesServiceEndpoint: $(devAksServiceConnectionName)
+                kubernetesCluster: $(aksClusterName)
+                namespace: $(kubernetes-namespace)
+                command: apply
+                arguments: '-f $(Build.SourcesDirectory)/k8s/dev/.'
+
+
+- stage: DeployToQA
+  displayName: Deploy to QA
+  dependsOn: Test
+  condition: and(succeeded('Build'), eq(variables['Build.SourceBranch'], 'refs/heads/qa'))
+  variables:
+  - group: products-microservice-qa
+
+  jobs:
+  - deployment: DeploymentToQA
+    displayName: Deployment to QA Environment
+    environment: qa
+    strategy:
+      runOnce:
+        deploy:
+            steps:
+            - checkout: self
+              displayName: Checkout source code
+        
+            - script: |
+                echo "Listing contents of k8s"
+                ls -l $(Build.SourcesDirectory)/k8s/qa
+              displayName:  'List Files in k8s/qa Directory'
+
+            - script: |
+                find $(Build.SourcesDirectory)/k8s/qa -type f \( -name "*.yaml" -o -name "*.yml" \) -exec sed -i 's/__TAG__/$(tag)/g' {} +
+              displayName: 'Replace image tag in all deployment files'
+
+            - task: Kubernetes@1
+              displayName: Deploy to qa namespace in kubernetes
+              inputs:
+                kubernetesServiceEndpoint: $(qaAksServiceConnectionName)
+                kubernetesCluster: $(aksClusterName)
+                namespace: $(kubernetes-namespace)
+                command: apply
+                arguments: '-f $(Build.SourcesDirectory)/k8s/qa/.'
+
+
+- stage: DeployToUAT
+  displayName: Deploy to UAT
+  dependsOn: Test
+  condition: and(succeeded('Build'), eq(variables['Build.SourceBranch'], 'refs/heads/uat'))
+  variables:
+  - group: products-microservice-uat
+
+  jobs:
+  - deployment: DeploymentToUAT
+    displayName: Deployment to UAT Environment
+    environment: uat
+    strategy:
+      runOnce:
+        deploy:
+            steps:
+            - checkout: self
+              displayName: Checkout source code
+        
+            - script: |
+                echo "Listing contents of k8s"
+                ls -l $(Build.SourcesDirectory)/k8s/uat
+              displayName:  'List Files in k8s/uat Directory'
+
+            - script: |
+                find $(Build.SourcesDirectory)/k8s/uat -type f \( -name "*.yaml" -o -name "*.yml" \) -exec sed -i 's/__TAG__/$(tag)/g' {} +
+              displayName: 'Replace image tag in all deployment files'
+
+            - task: Kubernetes@1
+              displayName: Deploy to uat namespace in kubernetes
+              inputs:
+                kubernetesServiceEndpoint: $(uatAksServiceConnectionName)
+                kubernetesCluster: $(aksClusterName)
+                namespace: $(kubernetes-namespace)
+                command: apply
+                arguments: '-f $(Build.SourcesDirectory)/k8s/uat/.'
+
+
+- stage: DeployToStaging
+  displayName: Deploy to Staging
+  dependsOn: Test
+  condition: and(succeeded('Build'), eq(variables['Build.SourceBranch'], 'refs/heads/staging'))
+  variables:
+  - group: products-microservice-staging
+
+  jobs:
+  - deployment: DeploymentToStaging
+    displayName: Deployment to Staging Environment
+    environment: staging
+    strategy:
+      runOnce:
+        deploy:
+            steps:
+            - checkout: self
+              displayName: Checkout source code
+        
+            - script: |
+                echo "Listing contents of k8s"
+                ls -l $(Build.SourcesDirectory)/k8s/staging
+              displayName:  'List Files in k8s/staging Directory'
+
+            - script: |
+                find $(Build.SourcesDirectory)/k8s/staging -type f \( -name "*.yaml" -o -name "*.yml" \) -exec sed -i 's/__TAG__/$(tag)/g' {} +
+              displayName: 'Replace image tag in all deployment files'
+
+            - task: Kubernetes@1
+              displayName: Deploy to staging namespace in kubernetes
+              inputs:
+                kubernetesServiceEndpoint: $(stagingAksServiceConnectionName)
+                kubernetesCluster: $(aksClusterName)
+                namespace: $(kubernetes-namespace)
+                command: apply
+                arguments: '-f $(Build.SourcesDirectory)/k8s/staging/.'
+
+
+- stage: DeployToProduction
+  displayName: Deploy to Production
+  dependsOn: Test
+  condition: and(succeeded('Build'), eq(variables['Build.SourceBranch'], 'refs/heads/prod'))
+  variables:
+  - group: products-microservice-prod
+
+  jobs:
+  - deployment: DeploymentToProduction
+    displayName: Deployment to Production Environment
+    environment: prod
+    strategy:
+      runOnce:
+        deploy:
+            steps:
+            - checkout: self
+              displayName: Checkout source code
+        
+            - script: |
+                echo "Listing contents of k8s"
+                ls -l $(Build.SourcesDirectory)/k8s/prod
+              displayName:  'List Files in k8s/prod Directory'
+
+            - script: |
+                find $(Build.SourcesDirectory)/k8s/prod -type f \( -name "*.yaml" -o -name "*.yml" \) -exec sed -i 's/__TAG__/$(tag)/g' {} +
+              displayName: 'Replace image tag in all deployment files'
+
+            - task: Kubernetes@1
+              displayName: Deploy to prod namespace in kubernetes
+              inputs:
+                kubernetesServiceEndpoint: $(prodAksServiceConnectionName)
+                kubernetesCluster: $(aksClusterName)
+                namespace: $(kubernetes-namespace)
+                command: apply
+                arguments: '-f $(Build.SourcesDirectory)/k8s/prod/.'
+
+
+
+------------------------------------------
+
+
+Orders Microservice Pipeline:
+trigger:
+  branches:
+    include:
+      - dev
+      - qa
+      - uat
+      - staging
+      - prod
+
+resources:
+- repo: self
+
+variables:
+  - name: dockerRegistryServiceConnection
+    value: 'shivamecomregistry'
+  - name: imageRepository
+    value: 'orders-microservice'
+  - name: containerRegistry
+    value: 'harshaecommerceregistry.azurecr.io'
+  - name: dockerfilePath
+    value: '$(Build.SourcesDirectory)/OrdersMicroservice.API/Dockerfile'
+  - name: tag
+    value: '$(Build.BuildId)'
+  - name: linuxImageName 
+    value: 'ubuntu-latest'
+  - name: windowsImageName
+    value: 'windows-latest'
+  - name: aksClusterName
+    value: 'ecommerce-aks-cluster'
+  - name: devAksServiceConnectionName
+    value: 'dev-ecommerce-aks-cluster-dev-1730536761296'
+  - name: qaAksServiceConnectionName
+    value: 'qa-ecommerce-aks-cluster-qa-1730536816326'
+  - name: uatAksServiceConnectionName
+    value: 'uat-ecommerce-aks-cluster-uat-1730536853118'
+  - name: stagingAksServiceConnectionName
+    value: 'staging-ecommerce-aks-cluster-staging-1730536888291'
+  - name: prodAksServiceConnectionName
+    value: 'prod-ecommerce-aks-cluster-prod-1730537000746'
+
+
+stages:
+- stage: Build
+  displayName: Build and push stage
+  jobs:
+  - job: Build
+    displayName: Docker Build
+    pool:
+      vmImage: $(linuxImageName)
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+        buildContext: $(Build.SourcesDirectory)
+
+- stage: Test
+  displayName: Test and publish results stage
+  jobs:
+  - job: RunTest
+    displayName: Run Unit tests
+    pool:
+      vmImage: $(windowsImageName)
+    steps:
+    - checkout: self
+      displayName: Checkout source code
+
+    - task: NuGetToolInstaller@1
+      displayName: Install NuGetTool
+
+    - task: NuGetCommand@2
+      displayName: Restore NuGet Packages
+      inputs:
+        command: 'restore'
+        restoreSolution: '**/*.sln'
+        
+    - task: MSBuild@1
+      displayName: Build solution
+      inputs:
+        solution: '**/*.sln'
+        msbuildArchitecture: 'x64'
+        platform: 'Any CPU'
+        configuration: 'Debug'
+    
+    - task: VSTest@3
+      displayName: Test solution
+      inputs:
+        testSelector: 'testAssemblies'
+        testAssemblyVer2: |
+          **\OrdersUnitTests.dll
+          !**\*TestAdapter.dll
+          !**\obj\**
+        searchFolder: '$(System.DefaultWorkingDirectory)'
+        runTestsInIsolation: true
+        codeCoverageEnabled: true
+
+- stage: DeployToDev
+  displayName: Deploy to Dev
+  dependsOn: Test
+  condition: and(succeeded('Build'), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+  variables:
+  - group: orders-microservice-dev
+
+  jobs:
+  - deployment: DeploymentToDev
+    displayName: Deployment to Dev Environment
+    environment: dev
+    strategy:
+      runOnce:
+        deploy:
+            steps:
+            - checkout: self
+              displayName: Checkout source code
+        
+            - script: |
+                echo "Listing contents of k8s"
+                ls -l $(Build.SourcesDirectory)/k8s/dev
+              displayName:  'List Files in k8s/dev Directory'
+
+            - script: |
+                find $(Build.SourcesDirectory)/k8s/dev -type f \( -name "*.yaml" -o -name "*.yml" \) -exec sed -i 's/__TAG__/$(tag)/g' {} +
+              displayName: 'Replace image tag in all deployment files'
+
+            - task: Kubernetes@1
+              displayName: Deploy to dev namespace in kubernetes
+              inputs:
+                kubernetesServiceEndpoint: $(devAksServiceConnectionName)
+                kubernetesCluster: $(aksClusterName)
+                namespace: $(kubernetes-namespace)
+                command: apply
+                arguments: '-f $(Build.SourcesDirectory)/k8s/dev/.'
+
+
+- stage: DeployToQA
+  displayName: Deploy to QA
+  dependsOn: Test
+  condition: and(succeeded('Build'), eq(variables['Build.SourceBranch'], 'refs/heads/qa'))
+  variables:
+  - group: orders-microservice-qa
+
+  jobs:
+  - deployment: DeploymentToQA
+    displayName: Deployment to QA Environment
+    environment: qa
+    strategy:
+      runOnce:
+        deploy:
+            steps:
+            - checkout: self
+              displayName: Checkout source code
+        
+            - script: |
+                echo "Listing contents of k8s"
+                ls -l $(Build.SourcesDirectory)/k8s/qa
+              displayName:  'List Files in k8s/qa Directory'
+
+            - script: |
+                find $(Build.SourcesDirectory)/k8s/qa -type f \( -name "*.yaml" -o -name "*.yml" \) -exec sed -i 's/__TAG__/$(tag)/g' {} +
+              displayName: 'Replace image tag in all deployment files'
+
+            - task: Kubernetes@1
+              displayName: Deploy to qa namespace in kubernetes
+              inputs:
+                kubernetesServiceEndpoint: $(qaAksServiceConnectionName)
+                kubernetesCluster: $(aksClusterName)
+                namespace: $(kubernetes-namespace)
+                command: apply
+                arguments: '-f $(Build.SourcesDirectory)/k8s/qa/.'
+
+
+- stage: DeployToUAT
+  displayName: Deploy to UAT
+  dependsOn: Test
+  condition: and(succeeded('Build'), eq(variables['Build.SourceBranch'], 'refs/heads/uat'))
+  variables:
+  - group: orders-microservice-uat
+
+  jobs:
+  - deployment: DeploymentToUAT
+    displayName: Deployment to UAT Environment
+    environment: uat
+    strategy:
+      runOnce:
+        deploy:
+            steps:
+            - checkout: self
+              displayName: Checkout source code
+        
+            - script: |
+                echo "Listing contents of k8s"
+                ls -l $(Build.SourcesDirectory)/k8s/uat
+              displayName:  'List Files in k8s/uat Directory'
+
+            - script: |
+                find $(Build.SourcesDirectory)/k8s/uat -type f \( -name "*.yaml" -o -name "*.yml" \) -exec sed -i 's/__TAG__/$(tag)/g' {} +
+              displayName: 'Replace image tag in all deployment files'
+
+            - task: Kubernetes@1
+              displayName: Deploy to uat namespace in kubernetes
+              inputs:
+                kubernetesServiceEndpoint: $(uatAksServiceConnectionName)
+                kubernetesCluster: $(aksClusterName)
+                namespace: $(kubernetes-namespace)
+                command: apply
+                arguments: '-f $(Build.SourcesDirectory)/k8s/uat/.'
+
+
+- stage: DeployToStaging
+  displayName: Deploy to Staging
+  dependsOn: Test
+  condition: and(succeeded('Build'), eq(variables['Build.SourceBranch'], 'refs/heads/staging'))
+  variables:
+  - group: orders-microservice-staging
+
+  jobs:
+  - deployment: DeploymentToStaging
+    displayName: Deployment to Staging Environment
+    environment: staging
+    strategy:
+      runOnce:
+        deploy:
+            steps:
+            - checkout: self
+              displayName: Checkout source code
+        
+            - script: |
+                echo "Listing contents of k8s"
+                ls -l $(Build.SourcesDirectory)/k8s/staging
+              displayName:  'List Files in k8s/staging Directory'
+
+            - script: |
+                find $(Build.SourcesDirectory)/k8s/staging -type f \( -name "*.yaml" -o -name "*.yml" \) -exec sed -i 's/__TAG__/$(tag)/g' {} +
+              displayName: 'Replace image tag in all deployment files'
+
+            - task: Kubernetes@1
+              displayName: Deploy to staging namespace in kubernetes
+              inputs:
+                kubernetesServiceEndpoint: $(stagingAksServiceConnectionName)
+                kubernetesCluster: $(aksClusterName)
+                namespace: $(kubernetes-namespace)
+                command: apply
+                arguments: '-f $(Build.SourcesDirectory)/k8s/staging/.'
+
+
+- stage: DeployToProduction
+  displayName: Deploy to Production
+  dependsOn: Test
+  condition: and(succeeded('Build'), eq(variables['Build.SourceBranch'], 'refs/heads/prod'))
+  variables:
+  - group: orders-microservice-prod
+
+  jobs:
+  - deployment: DeploymentToProduction
+    displayName: Deployment to Production Environment
+    environment: prod
+    strategy:
+      runOnce:
+        deploy:
+            steps:
+            - checkout: self
+              displayName: Checkout source code
+        
+            - script: |
+                echo "Listing contents of k8s"
+                ls -l $(Build.SourcesDirectory)/k8s/prod
+              displayName:  'List Files in k8s/prod Directory'
+
+            - script: |
+                find $(Build.SourcesDirectory)/k8s/prod -type f \( -name "*.yaml" -o -name "*.yml" \) -exec sed -i 's/__TAG__/$(tag)/g' {} +
+              displayName: 'Replace image tag in all deployment files'
+
+            - task: Kubernetes@1
+              displayName: Deploy to prod namespace in kubernetes
+              inputs:
+                kubernetesServiceEndpoint: $(prodAksServiceConnectionName)
+                kubernetesCluster: $(aksClusterName)
+                namespace: $(kubernetes-namespace)
+                command: apply
+                arguments: '-f $(Build.SourcesDirectory)/k8s/prod/.'
+
+
+
+------------------------------------------
+
+
+Users Microservice Pipeline:
+trigger:
+  branches:
+    include:
+      - dev
+      - qa
+      - uat
+      - staging
+      - prod
+
+resources:
+- repo: self
+
+variables:
+  - name: dockerRegistryServiceConnection
+    value: 'shivamecomregistry'
+  - name: imageRepository
+    value: 'users-microservice'
+  - name: containerRegistry
+    value: 'harshaecommerceregistry.azurecr.io'
+  - name: dockerfilePath
+    value: '$(Build.SourcesDirectory)/eCommerce.API/Dockerfile'
+  - name: tag
+    value: '$(Build.BuildId)'
+  - name: linuxImageName 
+    value: 'ubuntu-latest'
+  - name: windowsImageName
+    value: 'windows-latest'
+  - name: aksClusterName
+    value: 'ecommerce-aks-cluster'
+  - name: devAksServiceConnectionName
+    value: 'dev-ecommerce-aks-cluster-dev-1730536761296'
+  - name: qaAksServiceConnectionName
+    value: 'qa-ecommerce-aks-cluster-qa-1730536816326'
+  - name: uatAksServiceConnectionName
+    value: 'uat-ecommerce-aks-cluster-uat-1730536853118'
+  - name: stagingAksServiceConnectionName
+    value: 'staging-ecommerce-aks-cluster-staging-1730536888291'
+  - name: prodAksServiceConnectionName
+    value: 'prod-ecommerce-aks-cluster-prod-1730537000746'
+
+
+stages:
+- stage: Build
+  displayName: Build and push stage
+  jobs:
+  - job: Build
+    displayName: Docker Build
+    pool:
+      vmImage: $(linuxImageName)
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(dockerfilePath)
+        containerRegistry: $(dockerRegistryServiceConnection)
+        tags: |
+          $(tag)
+        buildContext: $(Build.SourcesDirectory)
+
+- stage: Test
+  displayName: Test and publish results stage
+  jobs:
+  - job: RunTest
+    displayName: Run Unit tests
+    pool:
+      vmImage: $(windowsImageName)
+    steps:
+    - checkout: self
+      displayName: Checkout source code
+
+    - task: NuGetToolInstaller@1
+      displayName: Install NuGetTool
+
+    - task: NuGetCommand@2
+      displayName: Restore NuGet Packages
+      inputs:
+        command: 'restore'
+        restoreSolution: '**/*.sln'
+        
+    - task: MSBuild@1
+      displayName: Build solution
+      inputs:
+        solution: '**/*.sln'
+        msbuildArchitecture: 'x64'
+        platform: 'Any CPU'
+        configuration: 'Debug'
+    
+    - task: VSTest@3
+      displayName: Test solution
+      inputs:
+        testSelector: 'testAssemblies'
+        testAssemblyVer2: |
+          **\UsersUnitTests.dll
+          !**\*TestAdapter.dll
+          !**\obj\**
+        searchFolder: '$(System.DefaultWorkingDirectory)'
+        runTestsInIsolation: true
+        codeCoverageEnabled: true
+
+- stage: DeployToDev
+  displayName: Deploy to Dev
+  dependsOn: Test
+  condition: and(succeeded('Build'), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+  variables:
+  - group: users-microservice-dev
+
+  jobs:
+  - deployment: DeploymentToDev
+    displayName: Deployment to Dev Environment
+    environment: dev
+    strategy:
+      runOnce:
+        deploy:
+            steps:
+            - checkout: self
+              displayName: Checkout source code
+        
+            - script: |
+                echo "Listing contents of k8s"
+                ls -l $(Build.SourcesDirectory)/k8s/dev
+              displayName:  'List Files in k8s/dev Directory'
+
+            - script: |
+                find $(Build.SourcesDirectory)/k8s/dev -type f \( -name "*.yaml" -o -name "*.yml" \) -exec sed -i 's/__TAG__/$(tag)/g' {} +
+              displayName: 'Replace image tag in all deployment files'
+
+            - task: Kubernetes@1
+              displayName: Deploy to dev namespace in kubernetes
+              inputs:
+                kubernetesServiceEndpoint: $(devAksServiceConnectionName)
+                kubernetesCluster: $(aksClusterName)
+                namespace: $(kubernetes-namespace)
+                command: apply
+                arguments: '-f $(Build.SourcesDirectory)/k8s/dev/.'
+
+
+- stage: DeployToQA
+  displayName: Deploy to QA
+  dependsOn: Test
+  condition: and(succeeded('Build'), eq(variables['Build.SourceBranch'], 'refs/heads/qa'))
+  variables:
+  - group: users-microservice-qa
+
+  jobs:
+  - deployment: DeploymentToQA
+    displayName: Deployment to QA Environment
+    environment: qa
+    strategy:
+      runOnce:
+        deploy:
+            steps:
+            - checkout: self
+              displayName: Checkout source code
+        
+            - script: |
+                echo "Listing contents of k8s"
+                ls -l $(Build.SourcesDirectory)/k8s/qa
+              displayName:  'List Files in k8s/qa Directory'
+
+            - script: |
+                find $(Build.SourcesDirectory)/k8s/qa -type f \( -name "*.yaml" -o -name "*.yml" \) -exec sed -i 's/__TAG__/$(tag)/g' {} +
+              displayName: 'Replace image tag in all deployment files'
+
+            - task: Kubernetes@1
+              displayName: Deploy to qa namespace in kubernetes
+              inputs:
+                kubernetesServiceEndpoint: $(qaAksServiceConnectionName)
+                kubernetesCluster: $(aksClusterName)
+                namespace: $(kubernetes-namespace)
+                command: apply
+                arguments: '-f $(Build.SourcesDirectory)/k8s/qa/.'
+
+
+- stage: DeployToUAT
+  displayName: Deploy to UAT
+  dependsOn: Test
+  condition: and(succeeded('Build'), eq(variables['Build.SourceBranch'], 'refs/heads/uat'))
+  variables:
+  - group: users-microservice-uat
+
+  jobs:
+  - deployment: DeploymentToUAT
+    displayName: Deployment to UAT Environment
+    environment: uat
+    strategy:
+      runOnce:
+        deploy:
+            steps:
+            - checkout: self
+              displayName: Checkout source code
+        
+            - script: |
+                echo "Listing contents of k8s"
+                ls -l $(Build.SourcesDirectory)/k8s/uat
+              displayName:  'List Files in k8s/uat Directory'
+
+            - script: |
+                find $(Build.SourcesDirectory)/k8s/uat -type f \( -name "*.yaml" -o -name "*.yml" \) -exec sed -i 's/__TAG__/$(tag)/g' {} +
+              displayName: 'Replace image tag in all deployment files'
+
+            - task: Kubernetes@1
+              displayName: Deploy to uat namespace in kubernetes
+              inputs:
+                kubernetesServiceEndpoint: $(uatAksServiceConnectionName)
+                kubernetesCluster: $(aksClusterName)
+                namespace: $(kubernetes-namespace)
+                command: apply
+                arguments: '-f $(Build.SourcesDirectory)/k8s/uat/.'
+
+
+- stage: DeployToStaging
+  displayName: Deploy to Staging
+  dependsOn: Test
+  condition: and(succeeded('Build'), eq(variables['Build.SourceBranch'], 'refs/heads/staging'))
+  variables:
+  - group: users-microservice-staging
+
+  jobs:
+  - deployment: DeploymentToStaging
+    displayName: Deployment to Staging Environment
+    environment: staging
+    strategy:
+      runOnce:
+        deploy:
+            steps:
+            - checkout: self
+              displayName: Checkout source code
+        
+            - script: |
+                echo "Listing contents of k8s"
+                ls -l $(Build.SourcesDirectory)/k8s/staging
+              displayName:  'List Files in k8s/staging Directory'
+
+            - script: |
+                find $(Build.SourcesDirectory)/k8s/staging -type f \( -name "*.yaml" -o -name "*.yml" \) -exec sed -i 's/__TAG__/$(tag)/g' {} +
+              displayName: 'Replace image tag in all deployment files'
+
+            - task: Kubernetes@1
+              displayName: Deploy to staging namespace in kubernetes
+              inputs:
+                kubernetesServiceEndpoint: $(stagingAksServiceConnectionName)
+                kubernetesCluster: $(aksClusterName)
+                namespace: $(kubernetes-namespace)
+                command: apply
+                arguments: '-f $(Build.SourcesDirectory)/k8s/staging/.'
+
+
+- stage: DeployToProduction
+  displayName: Deploy to Production
+  dependsOn: Test
+  condition: and(succeeded('Build'), eq(variables['Build.SourceBranch'], 'refs/heads/prod'))
+  variables:
+  - group: users-microservice-prod
+
+  jobs:
+  - deployment: DeploymentToProduction
+    displayName: Deployment to Production Environment
+    environment: prod
+    strategy:
+      runOnce:
+        deploy:
+            steps:
+            - checkout: self
+              displayName: Checkout source code
+        
+            - script: |
+                echo "Listing contents of k8s"
+                ls -l $(Build.SourcesDirectory)/k8s/prod
+              displayName:  'List Files in k8s/prod Directory'
+
+            - script: |
+                find $(Build.SourcesDirectory)/k8s/prod -type f \( -name "*.yaml" -o -name "*.yml" \) -exec sed -i 's/__TAG__/$(tag)/g' {} +
+              displayName: 'Replace image tag in all deployment files'
+
+            - task: Kubernetes@1
+              displayName: Deploy to prod namespace in kubernetes
+              inputs:
+                kubernetesServiceEndpoint: $(prodAksServiceConnectionName)
+                kubernetesCluster: $(aksClusterName)
+                namespace: $(kubernetes-namespace)
+                command: apply
+                arguments: '-f $(Build.SourcesDirectory)/k8s/prod/.'
+
+
+
+------------------------------------------
+
+
+APIM Policies:
+<policies>
+    <!-- Throttle, authorize, validate, cache, or transform the requests -->
+    <inbound>
+        <base />
+        <cors>
+            <allowed-origins>
+                <origin>https://localhost:4200</origin>
+            </allowed-origins>
+            <allowed-methods>
+                <method>GET</method>
+                <method>POST</method>
+                <method>PUT</method>
+                <method>DELETE</method>
+                <method>OPTIONS</method>
+            </allowed-methods>
+            <allowed-headers>
+                <header>Authorization</header>
+                <header>Content-Type</header>
+            </allowed-headers>
+        </cors>
+        
+        <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized" require-expiration-time="true" require-scheme="Bearer">
+            <openid-config url="https://harshawebuniversity.b2clogin.com/harshawebuniversity.onmicrosoft.com/v2.0/.well-known/openid-configuration?p=B2C_1_SignUp_SignIn" />
+            
+            <audiences>
+                <audience>730d33fa-ce69-4cdc-9220-98defabaad70</audience>
+            </audiences>
+            <issuers>
+                <issuer>https://harshawebuniversity.b2clogin.com/e2238696-f0b5-48d0-a9f6-11e913dbbec0/v2.0/</issuer>
+            </issuers>
+        </validate-jwt>
+    </inbound>
+    <!-- Control if and how the requests are forwarded to services  -->
+    <backend>
+        <base />
+    </backend>
+    <!-- Customize the responses -->
+    <outbound>
+        <base />
+    </outbound>
+    <!-- Handle exceptions and customize error responses  -->
+    <on-error>
+        <base />
+    </on-error>
+</policies>
+
+
+------------------------------------------
+
+
+Azure AD B2C:
+  eCommerce Frontend:
+      Authentication:
+          https://localhost:4200/
+          Access tokens: Yes
+          ID tokens: Yes
+          Mobile and desktop flows: Yes
+
+      Secrets:
+          No
+      
+      Expose an API - Application ID URI:
+          https://harshawebuniversity.onmicrosoft.com/ecommerce
+
+      Expose an API - Add a scope:
+          https://harshawebuniversity.onmicrosoft.com/ecommerce/access_as_user
+      
+      API permissions:
+          https://harshawebuniversity.onmicrosoft.com/ecommerce/access_as_user
+      
+
+      User flows:
+          - Policies - User flows:
+              New user flow
+              Sign up and sign in
+              Recommended
+              Create
+              Policy Name: B2C_1_SignUp_SignIn
+              Local accounts: Email signup
+              Type of method: Email
+              MFA: Always On
+              Enforce Conditional access: Off
+              User attributes and token claims
+                  Email Address
+                  Given Name
+              Create
+
+
+              Properties:
+                  - Password configuration: Simple
+
+              ---------
+
+              signUp: 'B2C_1_SignUp',
+              signUpSignIn: 'B2C_1_SignUp_SignIn',
+              resetPassword: 'B2C_1_ResetPassword',
+              editProfile: 'B2C_1_EditProfile',
+
+
+  eCommerce Backend:
+      Authentication:
+          https://harsha-ecommerce-api3.azure-api.net/
+          Access tokens: Yes
+          ID tokens: No
+          Mobile and desktop flows: Yes
+
+      Secrets:
+          backend-secret
+      
+      API permissions:
+          Microsoft Graph
+          User.ReadWrite.All
+          Directory.ReadWrite.All
+      
+      Expose an API:
+          https://harshawebuniversity.onmicrosoft.com/ecommerce-backend/backend-scope
+      
+
+
+------------------------------------------
+

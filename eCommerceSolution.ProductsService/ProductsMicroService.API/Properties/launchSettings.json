@@ -1,0 +1,68 @@
+{
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables":
+      {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MYSQL_HOST": "localhost",
+        "MYSQL_PORT": "3306",
+        "MYSQL_DATABASE": "ecommerceproductsdatabase",
+        "MYSQL_USER": "root",
+        "MYSQL_PASSWORD": "admin"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "http://localhost:5259"
+    },
+    "https": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables":
+      {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MYSQL_HOST": "localhost",
+        "MYSQL_PORT": "3306",
+        "MYSQL_DATABASE": "ecommerceproductsdatabase",
+        "MYSQL_USER": "root",
+        "MYSQL_PASSWORD": "admin"
+      },
+      "dotnetRunMessages": true,
+      "applicationUrl": "https://localhost:7260;http://localhost:5259",
+      "launchUrl": "swagger"
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "environmentVariables":
+      {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MYSQL_HOST": "localhost",
+        "MYSQL_PORT": "3306",
+        "MYSQL_DATABASE": "ecommerceproductsdatabase",
+        "MYSQL_USER": "root",
+        "MYSQL_PASSWORD": "admin"
+      }
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchBrowser": true,
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "environmentVariables": {
+        "ASPNETCORE_HTTPS_PORTS": "8081",
+        "ASPNETCORE_HTTP_PORTS": "8080"
+      },
+      "publishAllPorts": true,
+      "useSSL": true
+    }
+  },
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:59227",
+      "sslPort": 44319
+    }
+  }
+}

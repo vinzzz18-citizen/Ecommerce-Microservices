@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: products-microservice-deployment
+  namespace: ecommerce-namespace
+  labels:
+    app: products-microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: products-microservice
+  template:
+    metadata:
+      labels:
+        app: products-microservice
+    spec:
+      containers:
+        - name: products-microservice
+          image: shivamecomregistry.azurecr.io/products-microservice:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Development
+            - name: MYSQL_HOST
+              value: mysql
+            - name: MYSQL_PORT
+              value: "3306"
+            - name: MYSQL_DATABASE
+              value: ecommerceproductsdatabase
+            - name: MYSQL_USER
+              value: root
+            - name: MYSQL_PASSWORD
+              value: admin
+            - name: RabbitMQ_HostName
+              value: rabbitmq
+            - name: RabbitMQ_Port
+              value: "5672"
+            - name: RabbitMQ_UserName
+              value: guest
+            - name: RabbitMQ_Password
+              value: guest
+            - name: RabbitMQ_Products_Exchange
+              value: products.exchange
